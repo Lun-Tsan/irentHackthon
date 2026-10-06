@@ -1,0 +1,4 @@
+# vendored TF.js bundle and model weights: store byte-for-byte
+app/static/vendor/** -text
+# PowerShell 5.1 needs CRLF + the UTF-8 BOM that run.ps1 already has
+*.ps1 text eol=crlf

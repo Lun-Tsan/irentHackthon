@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iRent 車況管家 · 後台工作台</title>
+<style>
+:root{--bg:#f4f6f2;--panel:#fff;--line:#d5dcd7;--ink:#1f2a27;--muted:#5b6662;--acc:#a84c15;--ok:#1f6f62;--warn:#8a6a10;--bad:#b3261e;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:14px}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#16302b;color:#e6eee9}
+header b{font-size:17px}
+header button{padding:8px 12px;border-radius:8px;border:1px solid #3a5a52;background:transparent;color:#e6eee9;cursor:pointer}
+main{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;padding:16px 20px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+h2{font-size:15px;margin:0 0 10px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.veh{display:flex;gap:10px;flex-wrap:wrap}
+.veh div{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#fbfcfa}
+.state{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:12px;margin-left:6px}
+.s-available{background:#dff3ea;color:var(--ok)}.s-rented{background:#e3eae5;color:var(--ink)}.s-pending_review{background:#fbeedd;color:var(--acc)}.s-needs_service{background:#f9dcd9;color:var(--bad)}.s-pending_acceptance{background:#f5ecc8;color:var(--warn)}
+.rec{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:#fbfcfa}
+.rec.human{border-color:var(--bad)}.rec.review{border-color:var(--warn)}.rec.appealing{border-color:var(--acc);background:#fff7ef}
+.rec h3{margin:0 0 6px;font-size:14px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
+.b-human{background:#f9dcd9;color:var(--bad)}.b-review{background:#f5ecc8;color:var(--warn)}.b-pass{background:#dff3ea;color:var(--ok)}
+.imgs{display:flex;gap:6px;margin:8px 0}
+.imgs figure{margin:0;flex:1}
+.imgs img{width:100%;border-radius:8px;border:1px solid var(--line);display:block}
+.imgs figcaption{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+.act{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.act button{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font:inherit}
+.act button.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.act label{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+th{border-top:none;color:var(--muted);font-weight:600;font-size:12px}
+.muted{color:var(--muted);font-size:12px}
+.log{font-family:ui-monospace,Consolas,monospace;font-size:12px;max-height:280px;overflow:auto;white-space:pre-wrap}
+.empty{color:var(--muted);padding:10px 0}
+input[type=file]{font-size:12px}
+.tip{grid-column:1/-1;background:#fbeedd;border-color:#e5c4a8}
+#err{grid-column:1/-1;display:none;background:#f9dcd9;border-color:var(--bad);color:var(--bad)}
+</style>
+</head>
+<body>
+<header><b>iRent 車況管家 · 後台工作台</b><div><a href="/live" style="color:#e8935a;margin-right:16px;font-size:14px">現場即時畫面 →</a><span id="clock" class="muted" style="color:#bfd3cb;margin-right:12px"></span><button onclick="reset()">重置 demo 資料</button></div></header>
+<main>
+  <section class="tip"><b>劇本提示：</b>手機端「有新傷」→ 這裡會出現轉人工的區塊，按「新傷」後用戶會收到附對照圖的通知並可申訴；「髒車」→ 車輛自動變「待清潔」、下一位被改派、出現清潔工單，上傳完成照驗收後回「可租」。AI 只分流、不計費：所有通知都在這裡按下去才會發。</section>
+  <section id="err"></section>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <section><h2>車輛狀態</h2><div class="veh" id="veh"></div></section>
+    <section><h2>待處理佇列（轉人工 / 送複判 / 申訴中）</h2><div id="queue"></div></section>
+    <section><h2>已判定</h2><div id="decided"></div></section>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <section><h2>工單</h2><div id="wo"></div></section>
+    <section><h2>租約與點數</h2><div id="rentals"></div></section>
+    <section><h2>事件紀錄</h2><div class="log" id="log"></div></section>
+  </div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const _last={};
+// Only touch the DOM when the HTML actually changed, and keep checkbox state across a redraw:
+// otherwise the 3-second poll wipes the「需維修」tick and swaps out a file input mid-selection.
+function put(sel,html){if(_last[sel]===html)return;const keep=[...document.querySelectorAll(sel+' input[type=checkbox]:checked')].map(x=>x.id);_last[sel]=html;$(sel).innerHTML=html;keep.forEach(id=>{const e=document.getElementById(id);if(e)e.checked=true;});}
+function showErr(msg){const e=$('#err');if(!msg){e.style.display='none';return;}e.style.display='block';e.textContent=msg;}
+async function refresh(){
+  let o;try{const r=await fetch('/api/admin/overview');if(!r.ok)throw new Error('HTTP '+r.status);o=await r.json();showErr('');}catch(e){showErr('連不到伺服器：'+e.message);return;}
+  $('#clock').textContent=new Date().toLocaleTimeString();
+  put('#veh',o.vehicles.map(v=>`<div><b>${v.id}</b> ${v.plate} · ${v.model}<span class="state s-${v.state}">${v.state_label}</span><div class="muted">${v.location} · 里程 ${v.odometer}</div></div>`).join(''));
+  put('#queue',o.queue.length?o.queue.map(r=>`<div class="rec ${r.state==='appealing'?'appealing':r.band}"><h3><span class="badge b-${r.band}">${r.band_label}</span>${r.slot} · 區塊 ${r.panel} · 差異 ${r.score.toFixed(2)} · <span class="muted">${r.rental_id}</span> · ${r.state_label}</h3><div class="muted">${r.reason}</div>
+    <div class="imgs"><figure><img src="${r.baseline_photo}"><figcaption>取車（基準）</figcaption></figure><figure><img src="${r.current_photo}"><figcaption>還車</figcaption></figure><figure><img src="${r.heatmap}"><figcaption>差異熱區</figcaption></figure></div>
+    ${r.state==='appealing'?`<div class="muted">申訴內容：${r.appeal_text||'（無）'}</div><div class="act"><button class="p" onclick="resolve('${r.id}','overturn')">撤銷（誤判，修正標籤）</button><button onclick="resolve('${r.id}','uphold')">維持原判定</button></div>`
+    :`<div class="act"><button class="p" onclick="decide('${r.id}','new')">新傷（通知用戶）</button><label><input type="checkbox" id="rep-${r.id}"> 需維修（暫停出租、開工單）</label><button onclick="decide('${r.id}','old')">舊傷</button><button onclick="decide('${r.id}','false')">誤報（反光／水痕）</button></div>`}</div>`).join(''):'<div class="empty">目前沒有待處理項目。手機端完成還車後會出現在這裡。</div>');
+  put('#decided',o.decided.length?`<table><tr><th>紀錄</th><th>視角／區塊</th><th>差異</th><th>狀態</th><th>時間</th></tr>${o.decided.map(r=>`<tr><td>${r.id}</td><td>${r.slot} ${r.panel}</td><td>${r.score.toFixed(2)}</td><td>${r.state_label}</td><td class="muted">${r.decided_at||''}</td></tr>`).join('')}</table>`:'<div class="empty">尚無</div>');
+  put('#wo',o.workorders.length?o.workorders.map(w=>`<div class="rec"><h3>${w.id} · ${w.type==='cleaning'?'清潔':'維修'} · ${w.status_label} · SLA ${w.sla_hours} 小時</h3><div class="muted">${w.detail.why||''} ${w.detail.slots?'· '+w.detail.slots.join('、'):''} ${w.detail.panel?'· 區塊 '+w.detail.panel:''} · ${w.vehicle_id} · ${w.created_at}</div>
+    ${w.evidence.length?`<div class="imgs">${w.evidence.slice(0,3).map(u=>`<figure><img src="${u}"></figure>`).join('')}</div>`:''}
+    ${w.status!=='done'?`<div class="act"><label>整備完成照：</label><input type="file" accept="image/*" onchange="completeWO('${w.id}',this)"><span class="muted">上傳後由同一組模型驗收</span></div>`:`<div class="muted">驗收：${w.acceptance?JSON.stringify(w.acceptance):''}</div>`}</div>`).join(''):'<div class="empty">尚無工單</div>');
+  put('#rentals',`<table><tr><th>租約</th><th>用戶</th><th>狀態</th><th>點數</th></tr>${o.rentals.map(r=>`<tr><td>${r.id}</td><td>${r.user}</td><td>${r.status}</td><td>${r.points}</td></tr>`).join('')}</table>`);
+  put('#log',o.events.map(e=>`${e.ts}  ${e.entity}:${e.entity_id}  ${e.event}${e.from_state||e.to_state?`  ${e.from_state||''} → ${e.to_state||''}`:''}  ${e.detail||''}`).join('\n').replace(/</g,'&lt;'));
+}
+async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)alert('失敗：'+await r.text());await refresh();}
+function decide(id,d){const rep=document.getElementById('rep-'+id);post('/api/admin/decide/'+id,{decision:d,needs_repair:!!(rep&&rep.checked)});}
+function resolve(id,o){post('/api/admin/appeal/'+id,{outcome:o});}
+async function completeWO(id,inp){const f=inp.files[0];if(!f)return;const fd=new FormData();fd.append('image',f);
+  let r;try{r=await fetch('/api/workorder/'+id+'/complete',{method:'POST',body:fd});}catch(e){alert('上傳失敗：'+e.message);inp.value='';return;}
+  if(!r.ok){alert('上傳失敗：'+await r.text());inp.value='';return;}
+  const j=await r.json();alert(j.accepted?'驗收通過，車輛已恢復上架':'驗收不通過：'+JSON.stringify(j.acceptance));refresh();}
+async function reset(){if(!confirm('清掉所有 demo 資料？'))return;const r=await fetch('/api/reset',{method:'POST'});if(!r.ok)alert('重置失敗：'+await r.text());Object.keys(_last).forEach(k=>delete _last[k]);refresh();}
+refresh();setInterval(refresh,3000);
+</script>
+</body>
+</html>

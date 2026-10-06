@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iRent 車況管家</title>
+<style>
+:root{--bg:#0f1513;--panel:#18211e;--line:#2a3733;--ink:#e8efec;--muted:#93a39d;--acc:#e8935a;--ok:#4cc38a;--warn:#f5c451;--bad:#f0655c;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16px;padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header b{font-size:17px}
+.pts{font-size:13px;color:var(--acc);font-weight:700}
+.screen{display:none;padding:16px}
+.screen.on{display:block}
+h2{font-size:20px;margin:0 0 12px}
+label.f{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+select,button,input[type=text]{font:inherit}
+select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:12px 6px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#1a0e06;font-weight:700}
+.btn{display:block;width:100%;padding:15px;border-radius:12px;border:none;background:var(--acc);color:#1a0e06;font-weight:700;font-size:17px;margin-top:20px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);font-weight:500}
+.btn.ok{background:var(--ok);color:#06130c}
+.btn:disabled{opacity:.4}
+.chk{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;color:var(--muted)}
+.tiles{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.tile{flex:none;min-width:74px;padding:8px 6px;border-radius:10px;border:1px solid var(--line);background:var(--panel);text-align:center;font-size:12px;color:var(--muted)}
+.tile.cur{border-color:var(--acc);color:var(--ink)}
+.tile.done{border-color:var(--ok);color:var(--ok)}
+.tile.unv{border-color:var(--warn);color:var(--warn)}
+.tile small{display:block;font-size:11px;opacity:.8}
+.cam{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden}
+.cam.portrait{aspect-ratio:9/16;width:min(100%,calc(62vh * 9 / 16));width:min(100%,calc(62dvh * 9 / 16));margin:0 auto}
+.cam video,.cam svg,.cam img.prev,.cam img.ghost,.cam canvas.boxes{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cam svg,.cam canvas.boxes,.cam img.ghost{pointer-events:none}
+.cam img.ghost{opacity:.42;filter:contrast(1.25)}
+.cam.flip img.ghost{transform:scaleX(-1)}
+.flipbtn{position:absolute;right:10px;bottom:14px;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 12px;font-size:13px}
+.chip.dim{color:var(--muted)}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.chip{background:rgba(0,0,0,.55);padding:5px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.2)}
+.chip.bad{border-color:var(--bad);color:var(--bad)}
+.chip.ok{border-color:var(--ok);color:var(--ok)}
+.shot{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:66px;height:66px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.25)}
+.shot:active{background:#fff}
+.slotname{position:absolute;right:10px;top:10px;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700}
+.res{margin-top:12px;padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:14px}
+.res.ok{border-color:var(--ok)}.res.bad{border-color:var(--bad)}
+.res b{display:block;font-size:15px;margin-bottom:6px}
+.res ul{margin:6px 0 0 18px;padding:0}
+.row{display:flex;gap:8px;margin-top:10px}
+.row button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:14px}
+.card{padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);margin-bottom:10px;font-size:14px}
+.card h3{margin:0 0 8px;font-size:15px}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
+.b-pass{background:#153d2a;color:var(--ok)}.b-review{background:#3f3416;color:var(--warn)}.b-human{background:#3f1e1a;color:var(--bad)}
+.b-clean{background:#153d2a;color:var(--ok)}.b-normal{background:#3f3416;color:var(--warn)}.b-dirty{background:#3f1e1a;color:var(--bad)}.b-unknown{background:#2a3733;color:var(--muted)}
+.thumbs{display:flex;gap:6px;margin-top:8px;overflow-x:auto}
+.thumbs img{height:84px;border-radius:8px;border:1px solid var(--line)}
+.muted{color:var(--muted);font-size:13px}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:70vh;overflow:auto;background:var(--panel);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:14px 16px calc(80px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .25s;z-index:9}
+.sheet.on{transform:none}
+.sheet h2{display:flex;justify-content:space-between;align-items:center}
+.sheet h2 button{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:13px}
+.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));padding:12px 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;z-index:10}
+.fab i{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--bad);color:#fff;font-style:normal;font-size:12px;text-align:center;margin-left:6px}
+.note{padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);margin-bottom:10px;font-size:14px}
+.note b{display:block;margin-bottom:4px}
+.note time{color:var(--muted);font-size:12px}
+input[type=file]{width:100%;padding:12px;border-radius:10px;border:1px dashed var(--line);background:var(--panel);color:var(--ink)}
+/* 橫拍時整個 16:9 取景框（含快門）要落在一個畫面內 */
+@media (orientation:landscape) and (max-height:540px){
+  header{position:static}
+  .tiles{padding:0 0 6px}
+  .cam{width:min(100%,calc((100vh - 24px)*16/9));width:min(100%,calc((100dvh - 24px)*16/9));margin:0 auto}
+}
+</style>
+</head>
+<body>
+<header><b>iRent 車況管家</b><span class="pts" id="pts"></span></header>
+
+<section id="s-start" class="screen on">
+  <h2>開始</h2>
+  <label class="f">租約</label>
+  <select id="rental"></select>
+  <label class="f">階段</label>
+  <div class="seg" id="phase"><button data-v="pickup">取車</button><button data-v="return" class="on">還車</button></div>
+  <label class="f">劇本（錄影用；「自動判讀」會真的跑演算法）</label>
+  <div class="seg" id="scenario"><button data-v="clean" class="on">正常</button><button data-v="damage">有新傷</button><button data-v="dirty">髒車</button><button data-v="auto">自動判讀</button></div>
+  <label class="chk"><input type="checkbox" id="lite" checked> 精簡模式：只拍 4 張（右前、右後、後車內、儀表板）</label>
+  <label class="chk"><input type="checkbox" id="guide" checked> 即時位置引導：瀏覽器內跑車輛偵測，提示往左／往右／太遠（第一次載入約 15 MB）</label>
+  <button class="btn" id="go">開始拍照</button>
+  <p class="muted" id="camnote"></p>
+</section>
+
+<section id="s-cap" class="screen">
+  <div class="tiles" id="tiles"></div>
+  <div class="cam" id="cam">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas class="boxes" id="boxes"></canvas>
+    <img class="prev" id="prev" hidden alt="">
+    <div id="overlay"></div>
+    <div class="chips" id="chips"></div>
+    <div class="slotname" id="slotname"></div>
+    <button class="shot" id="shot" aria-label="拍照"></button>
+    <button class="flipbtn" id="flip" type="button">鏡像範例</button>
+  </div>
+  <div id="filewrap" hidden style="margin-top:10px"><input type="file" id="file" accept="image/*" capture="environment"></div>
+  <div id="result"></div>
+  <button class="btn ok" id="finish" disabled>完成</button>
+  <button class="btn ghost" id="skip">先跳過這張</button>
+</section>
+
+<section id="s-sum" class="screen">
+  <h2 id="sumtitle">判讀結果</h2>
+  <div id="summary"></div>
+  <button class="btn ghost" id="again">再來一次</button>
+</section>
+
+<button class="fab" id="fab" hidden>通知<i id="badge">0</i></button>
+<div class="sheet" id="sheet"><h2>通知 <button id="closeSheet">關閉</button></h2><div id="notes"></div></div>
+
+<script src="/static/overlay.js"></script>
+<script src="/static/vendor/tf.min.js"></script>
+<script src="/static/vendor/coco-ssd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const S={rental:null,phase:'return',scenario:'clean',lite:true,session:null,slots:[],allSlots:[],cur:0,done:{},fails:{},stream:null,notes:[],seen:0,vehicle:null,polling:false,busy:false,advT:0,lastBlob:null,orient:'any',guide:true,det:null,detBusy:false,detFail:false,lastBox:null,lastBoxAt:0};
+// COCO 對貼著車角的近拍常認成 boat／train，這些都當成「有車」處理：引導只在乎框的位置和大小，不在乎類別
+const VEHICLE_CLASSES=new Set(['car','truck','bus','motorcycle','boat','train','airplane']);
+const LITE=['ext_fr','ext_rr','int_rear','int_dash'];
+const BAND={pass:'自動放行',review:'送複判',human:'轉人工'};
+const LV={clean:'乾淨',normal:'普通',dirty:'髒汙（須立即清潔）',unknown:'未判定'};
+const VS={available:'可租',rented:'出租中',pending_review:'待確認',needs_service:'待清潔／待維修',pending_acceptance:'待驗收'};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function seg(id,key){document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');S[key]=b.dataset.v;});}
+seg('phase','phase');seg('scenario','scenario');
+
+async function init(){
+  try{
+    const cfg=await (await fetch('/api/config')).json();S.allSlots=cfg.slots;S.orient=(cfg.capture&&cfg.capture.orientation)||'any';
+    $('#cam').classList.toggle('portrait',S.orient==='portrait');
+    $('#guide').checked=!(cfg.capture&&cfg.capture.live_guidance===false);
+    const rs=await (await fetch('/api/rentals')).json();
+    $('#rental').innerHTML=rs.map(r=>`<option value="${r.id}" ${r.id==='R-B'?'selected':''}>${r.id} · ${esc(r.user)} · ${esc(r.plate)} ${esc(r.model)}</option>`).join('');
+  }catch(e){$('#camnote').textContent='連不到伺服器：'+e.message;return;}
+  $('#camnote').textContent=(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)?'即時相機可用（HTTPS）。':'目前是 HTTP：會改用手機原生相機拍照上傳，沒有即時取景框。要取景框請開 https 的網址。';
+}
+init();
+
+$('#go').onclick=async()=>{
+  const prevR=S.rental;S.rental=$('#rental').value;if(prevR!==S.rental){S.seen=0;S.notes=[];}
+  S.lite=$('#lite').checked;S.guide=$('#guide').checked;
+  let j;
+  try{const r=await fetch('/api/session/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rental_id:S.rental,phase:S.phase,scenario:S.scenario})});
+    if(!r.ok){alert('開始失敗：'+await r.text());return;}j=await r.json();}
+  catch(e){alert('連不到伺服器：'+e.message);return;}
+  S.session=j.session_id;S.vehicle=j.vehicle;
+  S.slots=S.lite?S.allSlots.filter(s=>LITE.includes(s.id)):S.allSlots;S.cur=0;S.done={};S.fails={};
+  show('s-cap');renderTiles();await startCamera();setSlot(0);$('#fab').hidden=false;
+  if(!S.polling){S.polling=true;poll();}
+};
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');}
+function renderTiles(){$('#tiles').innerHTML=S.slots.map((s,i)=>`<div class="tile ${i===S.cur?'cur':''} ${S.done[s.id]==='ok'?'done':''} ${S.done[s.id]==='unv'?'unv':''}" data-i="${i}">${s.label}<small>${S.done[s.id]==='ok'?'✓ 合格':S.done[s.id]==='unv'?'未驗證':i===S.cur?'拍攝中':'待拍'}</small></div>`).join('');
+  document.querySelectorAll('.tile').forEach(t=>t.onclick=()=>setSlot(+t.dataset.i));
+  const n=Object.keys(S.done).length;$('#finish').disabled=n===0||S.busy;$('#finish').textContent=`完成${S.phase==='pickup'?'取車':'還車'}（${n}/${S.slots.length} 張）`;}
+function live(){$('#prev').hidden=true;const v=$('#video');if(v.srcObject)v.play().catch(()=>{});S.lastBox=null;const c=$('#boxes');if(c.width)c.getContext('2d').clearRect(0,0,c.width,c.height);}
+// 範例疊圖左右相反時按「鏡像範例」，選擇記在這支手機上（localStorage）
+function flipKey(id){return 'irent_flip_'+id;}
+function applyFlip(){const s=S.slots[S.cur];let on=false;try{on=localStorage.getItem(flipKey(s.id))==='1';}catch(e){}$('#cam').classList.toggle('flip',on);$('#flip').hidden=!(s.kind==='exterior'||s.id==='int_front'||s.id==='int_rear');}
+$('#flip').onclick=()=>{const s=S.slots[S.cur];let on=false;try{on=localStorage.getItem(flipKey(s.id))==='1';localStorage.setItem(flipKey(s.id),on?'0':'1');}catch(e){}applyFlip();};
+function setSlot(i){clearTimeout(S.advT);S.cur=i;const s=S.slots[i];$('#slotname').textContent=`${i+1}/${S.slots.length} · ${s.label}`;$('#overlay').innerHTML=overlay(s);$('#result').innerHTML='';live();renderTiles();applyFlip();
+  if(innerWidth>innerHeight||S.orient==='portrait')$('#cam').scrollIntoView({block:'center'});}
+
+// 直拍取景框在 /static/overlay.js（和 overlay_check.html 共用）
+function overlay(s){
+  if(S.orient==='portrait')return window.overlayPortrait(s);
+  const st='fill:none;stroke:#fff;stroke-width:1.2;stroke-dasharray:4 3;opacity:.9';const ac='fill:none;stroke:#e8935a;stroke-width:1.8;stroke-dasharray:3 2';
+  const T=t=>`<text x="80" y="84" text-anchor="middle" font-size="5.5" fill="#fff" style="paint-order:stroke;stroke:#000;stroke-width:1.5">${t}</text>`;
+  let body='';
+  if(s.view==='front'||s.view==='rear'){body=`<path style="${st}" d="M30,64 L30,42 Q32,32 44,28 L52,20 Q56,17 80,17 Q104,17 108,20 L116,28 Q128,32 130,42 L130,64 Q130,68 126,68 L34,68 Q30,68 30,64 Z"/><rect style="${st}" x="50" y="26" width="60" height="14" rx="3"/><ellipse style="${st}" cx="44" cy="46" rx="6" ry="3"/><ellipse style="${st}" cx="116" cy="46" rx="6" ry="3"/><rect style="${ac}" x="66" y="54" width="28" height="8"/>${T('車牌放在橘框內，整台車入鏡')}`;}
+  else if(s.view==='side'){body=`<path style="${st}" d="M14,64 L14,50 Q16,42 30,40 L46,28 Q50,24 62,24 L100,24 Q110,24 116,30 L134,40 Q146,42 146,52 L146,64 Z"/><circle style="${st}" cx="44" cy="64" r="9"/><circle style="${st}" cx="116" cy="64" r="9"/>${T('整側車身入鏡，前後輪都要看到')}`;}
+  else if(s.view==='corner'){body=`<path style="${st}" d="M20,62 L20,48 Q22,42 34,40 L52,28 Q58,24 72,24 L108,26 Q126,28 136,36 L140,48 L140,62 Z"/><circle style="${st}" cx="44" cy="64" r="9"/><circle style="${st}" cx="122" cy="64" r="8"/>${T('從 45° 拍，車頭和側面都要看到')}`;}
+  else if(s.view==='dash'){body=`<rect style="${ac}" x="50" y="32" width="60" height="26" rx="3"/>${T('儀表板里程數放在橘框內，數字要清楚')}`;}
+  else if(s.id==='int_front'){body=`<rect style="${st}" x="12" y="12" width="136" height="66" rx="6"/><circle style="${st}" cx="40" cy="52" r="12"/>${T('前座、方向盤、腳踏墊全部入鏡')}`;}
+  else if(s.id==='int_trunk'){body=`<rect style="${st}" x="12" y="12" width="136" height="66" rx="6"/>${T('後車廂全部入鏡')}`;}
+  else{body=`<rect style="${st}" x="12" y="12" width="136" height="66" rx="6"/><rect style="${st}" x="52" y="26" width="22" height="14" rx="4"/><rect style="${st}" x="86" y="26" width="22" height="14" rx="4"/>${T('後座椅面和腳踏墊全部入鏡')}`;}
+  return `<svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">${body}</svg>`;
+}
+
+async function startCamera(){
+  if(S.stream)return;
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){fallback();return;}
+  try{S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+    $('#video').srcObject=S.stream;await $('#video').play();setInterval(hints,450);if(S.guide)loadDetector();}
+  catch(e){fallback('相機打不開（'+e.name+'），改用檔案上傳');}
+}
+// 即時位置引導：瀏覽器內跑 COCO-SSD lite（模型檔由筆電提供，手機不用連外網）
+async function loadDetector(){
+  if(S.det||S.detFail||!window.cocoSsd)return;
+  try{S.det=await cocoSsd.load({base:'lite_mobilenet_v2',modelUrl:'/static/vendor/ssdlite/model.json'});}
+  catch(e){S.detFail=true;console.warn('detector load failed',e);}
+}
+function guidanceChips(){
+  const s=S.slots[S.cur];if(!S.guide||!s||s.kind!=='exterior')return [];
+  if(S.detFail)return [['dim','位置引導無法啟用（此瀏覽器不支援）']];
+  if(!S.det)return [['dim','載入車輛偵測模型…']];
+  const v=$('#video');
+  if(!S.detBusy&&v.videoWidth){S.detBusy=true;S.det.detect(v,5).then(p=>{const c=p.filter(x=>VEHICLE_CLASSES.has(x.class)).sort((a,b)=>b.score-a.score)[0];S.lastBox=c?{bbox:c.bbox,score:c.score,cls:c.class}:null;S.lastBoxAt=Date.now();drawBoxes(v);}).catch(()=>{}).finally(()=>{S.detBusy=false;});}
+  if(Date.now()-S.lastBoxAt>2500)return [['dim','偵測中…']];
+  const b=S.lastBox;if(!b)return [['bad','畫面裡沒看到車，請對準車角']];
+  const [x,y,w,h]=b.bbox;const W=v.videoWidth,H=v.videoHeight;const cx=(x+w/2)/W,cy=(y+h/2)/H,area=(w*h)/(W*H);
+  const out=[];
+  if(area<0.30)out.push(['bad','太遠，靠近一點']);
+  if(cx<0.40)out.push(['bad','往左一點']);else if(cx>0.60)out.push(['bad','往右一點']);
+  if(cy<0.38)out.push(['bad','鏡頭抬高一點']);else if(cy>0.64)out.push(['bad','鏡頭放低一點']);
+  if(!out.length)out.push(['ok',`車輛位置 OK（${Math.round(b.score*100)}%）`]);
+  return out;
+}
+function drawBoxes(v){
+  const c=$('#boxes');if(c.width!==v.videoWidth||c.height!==v.videoHeight){c.width=v.videoWidth;c.height=v.videoHeight;}
+  const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);const b=S.lastBox;if(!b||!$('#prev').hidden)return;
+  const [x,y,w,h]=b.bbox;g.lineWidth=Math.max(3,c.width/240);g.strokeStyle='#4cc38a';g.strokeRect(x,y,w,h);
+  g.font=`${Math.max(18,c.width/40)}px sans-serif`;g.fillStyle='#4cc38a';g.fillText(`${b.cls} ${Math.round(b.score*100)}%`,x+8,y+Math.max(22,c.width/36));
+}
+function fallback(msg){$('#filewrap').hidden=false;$('#shot').hidden=true;$('#chips').innerHTML=`<div class="chip">${msg||'HTTP 模式：點下方按鈕用原生相機拍'}</div>`;}
+$('#file').onchange=async e=>{const f=e.target.files[0];if(f)await upload(f);e.target.value='';};
+
+const hc=document.createElement('canvas');hc.width=160;hc.height=90;const hx=hc.getContext('2d',{willReadFrequently:true});
+function hints(){const v=$('#video');if(!v.videoWidth||!$('#prev').hidden||!$('#s-cap').classList.contains('on'))return;hx.drawImage(v,0,0,160,90);const d=hx.getImageData(0,0,160,90).data;const g=new Float32Array(160*90);let sum=0;
+  for(let i=0;i<160*90;i++){g[i]=(d[i*4]*0.299+d[i*4+1]*0.587+d[i*4+2]*0.114);sum+=g[i];}
+  const mean=sum/(160*90)/255;let ls=0,ls2=0,n=0;
+  for(let y=1;y<89;y++)for(let x=1;x<159;x++){const i=y*160+x;const l=4*g[i]-g[i-1]-g[i+1]-g[i-160]-g[i+160];ls+=l;ls2+=l*l;n++;}
+  const lv=ls2/n-(ls/n)**2;const chips=[];
+  if(mean<0.18)chips.push(['bad','太暗，請開閃光燈或車內燈']);else if(mean>0.9)chips.push(['bad','太亮／反光']);
+  if(lv<15)chips.push(['bad','手晃／太糊，請拿穩']);
+  if(S.orient==='landscape'&&innerHeight>innerWidth)chips.push(['bad','請轉成橫向']);
+  if(S.orient==='portrait'&&innerWidth>innerHeight)chips.push(['bad','請直拿手機拍']);
+  const guide=guidanceChips();
+  if(!chips.length&&!guide.some(c=>c[0]==='bad'))chips.push(['ok','畫質 OK']);
+  $('#chips').innerHTML=chips.concat(guide).map(c=>`<div class="chip ${c[0]}">${c[1]}</div>`).join('');}
+
+$('#shot').onclick=()=>{const v=$('#video');if(S.busy||!v.videoWidth||!$('#prev').hidden)return;const w=Math.min(v.videoWidth,1280),h=Math.round(v.videoHeight*w/v.videoWidth);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);
+  $('#prev').src=c.toDataURL('image/jpeg',.7);$('#prev').hidden=false;c.toBlob(b=>upload(b),'image/jpeg',.85);};
+
+function retakeUI(){live();$('#result').innerHTML='';}
+async function upload(blob,force){if(S.busy)return;S.busy=true;$('#finish').disabled=true;
+  try{
+    const s=S.slots[S.cur];const fd=new FormData();fd.append('image',blob,'shot.jpg');fd.append('force',force?'1':'0');
+    $('#result').innerHTML='<div class="res">判讀中…</div>';
+    const t0=performance.now();let r,j;
+    try{r=await fetch(`/api/capture/${S.session}/${s.id}`,{method:'POST',body:fd});const txt=await r.text();try{j=JSON.parse(txt);}catch(_){j={detail:txt.slice(0,200)};}}
+    catch(e){$('#result').innerHTML=`<div class="res bad"><b>連線失敗，請再拍一次</b>${esc(e.message)}<div class="row"><button id="retake">重拍</button></div></div>`;$('#retake').onclick=retakeUI;return;}
+    const ms=Math.round(performance.now()-t0);
+    if(!r.ok){$('#result').innerHTML=`<div class="res bad"><b>上傳失敗</b>${esc(j.detail||'')}<div class="row"><button id="retake">重拍</button></div></div>`;$('#retake').onclick=retakeUI;return;}
+    S.lastBlob=blob;renderResult(j,ms);
+    if(j.accepted){S.done[s.id]=j.unverified?'unv':'ok';const next=S.slots.findIndex((x,i)=>i>S.cur&&!S.done[x.id]);if(next>=0)S.advT=setTimeout(()=>setSlot(next),1400);}
+    else{S.fails[s.id]=(S.fails[s.id]||0)+1;}
+  }finally{S.busy=false;renderTiles();}
+}
+function renderResult(j,ms){const c=j.checks||{};const bits=[];
+  if(c.plate&&!c.plate.skipped)bits.push(c.plate.found?`車牌 ${esc(c.plate.text)} ${c.plate.match?'✓ 符合訂單':'✗ 不符'} · 約 ${c.plate.distance_m} m`:'車牌：沒拍到');
+  if(c.odometer&&!c.odometer.skipped)bits.push(c.odometer.reading!=null?`里程 ${c.odometer.reading} km（車聯網 ${c.odometer.telematics}）`:'里程：沒讀到');
+  if(c.quality)bits.push(`清晰度 ${c.quality.blur} · 亮度 ${c.quality.brightness}`);
+  if(j.accepted){$('#result').innerHTML=`<div class="res ok"><b>✓ ${S.slots[S.cur].label} ${j.unverified?'已送出（未驗證，將交人工）':'合格'} · ${ms} ms</b><span class="muted">${bits.join('　')}</span></div>`;}
+  else{$('#result').innerHTML=`<div class="res bad"><b>✗ 請重拍</b><ul>${j.issues.map(i=>`<li>${esc(i.msg)}</li>`).join('')}</ul><span class="muted">${bits.join('　')}</span><div class="row"><button id="retake">重拍</button>${j.can_force?'<button id="force">車位太窄／太暗，加註記送出</button>':''}</div></div>`;
+    $('#retake').onclick=retakeUI;
+    const f=$('#force');if(f)f.onclick=()=>upload(S.lastBlob,true);}
+}
+$('#skip').onclick=()=>{const next=S.slots.findIndex((x,i)=>i>S.cur&&!S.done[x.id]);setSlot(next>=0?next:S.cur);};
+
+$('#finish').onclick=async()=>{if(S.busy)return;const b=$('#finish');b.disabled=true;b.textContent='AI 判讀中…';
+  try{const r=await fetch(`/api/session/${S.session}/complete`,{method:'POST'});if(!r.ok)throw new Error(await r.text());renderSummary(await r.json());show('s-sum');}
+  catch(e){alert('判讀失敗：'+e.message);renderTiles();}};
+function renderSummary(j){const lab=id=>(S.allSlots.find(s=>s.id===id)||{}).label||id;let h='';
+  h+=`<div class="card"><h3>車輛狀態：${VS[j.vehicle_state]||esc(j.vehicle_state)}</h3><span class="muted">${(j.notes||[]).map(esc).join(' ')}${j.scenario!=='auto'?'（劇本模式）':''}</span></div>`;
+  for(const e of j.exterior){h+=`<div class="card"><h3>${lab(e.slot)} <span class="badge b-${e.band}">${BAND[e.band]}</span><span class="muted">最大差異 ${e.max}（${e.max_panel}）${e.aligned?'':' · 未對齊'}</span></h3>${e.records.map(r=>`<div>區塊 ${r.panel}：${r.score} → ${r.label}</div>`).join('')}<div class="thumbs"><img src="${e.baseline}" alt="取車"><img src="${e.current}" alt="還車"><img src="${e.heatmap}" alt="熱區"></div></div>`;}
+  for(const i of j.interior){h+=`<div class="card"><h3>${lab(i.slot)} <span class="badge b-${i.level}">${LV[i.level]||esc(i.level)}</span></h3><span class="muted">${i.objects&&i.objects.length?'偵測到：'+i.objects.map(esc).join('、'):esc(i.note||'沒有遺留物')}</span><div class="thumbs"><img src="${i.photo}" alt=""></div></div>`;}
+  if(!j.exterior.length&&!j.interior.length)h+='<div class="card">這次沒有可比對的照片。</div>';
+  if(j.workorders.length)h+=`<div class="card"><h3>已自動開出 ${j.workorders.length} 張工單</h3><span class="muted">整備人員已收到推播，後台可看到。</span></div>`;
+  $('#summary').innerHTML=h;}
+$('#again').onclick=()=>{show('s-start');};
+
+async function poll(){try{const j=await (await fetch(`/api/notifications/${S.rental}`)).json();$('#pts').textContent=j.points?`${j.points} 點`:'';S.notes=j.items;
+  const unread=j.items.length-S.seen;$('#badge').textContent=Math.max(0,unread);renderNotes();}catch(e){}setTimeout(poll,3000);}
+function renderNotes(){$('#notes').innerHTML=S.notes.length?S.notes.map(n=>`<div class="note"><b>${esc(n.title)}</b>${esc(n.message)}<div class="thumbs">${(n.images||[]).map(u=>`<img src="${u}" alt="">`).join('')}</div>${n.kind==='damage_confirmed'?(n.record_state==='confirmed'?`<button class="btn ghost" style="margin-top:10px" onclick="appeal('${n.record_id}')">一鍵申訴（轉真人）</button>`:`<div class="muted" style="margin-top:8px">狀態：${{appealing:'申訴中',closed:'已撤銷',repaired:'已修復'}[n.record_state]||esc(n.record_state)}</div>`):''}<time>${n.created_at}</time></div>`).join(''):'<p class="muted">還沒有通知</p>';}
+async function appeal(id){const t=prompt('申訴說明（可留空）','我認為這是舊傷或反光');if(t===null)return;
+  try{const r=await fetch(`/api/appeal/${id}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:t})});if(!r.ok)alert('申訴失敗：'+await r.text());else alert('已送出申訴，真人客服 48 小時內回覆');}
+  catch(e){alert('連線失敗：'+e.message);}}
+$('#fab').onclick=()=>{$('#sheet').classList.toggle('on');S.seen=S.notes.length;$('#badge').textContent='0';};
+$('#closeSheet').onclick=()=>$('#sheet').classList.remove('on');
+</script>
+</body>
+</html>

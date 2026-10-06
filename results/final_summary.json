@@ -1,0 +1,697 @@
+{
+ "Qwen3.5-4B 原生 P1（單一問法，最快）": {
+  "note": "P1 only, chosen after E1 for speed",
+  "prompts": "P1",
+  "auc": 0.954,
+  "ci": [
+   0.912,
+   0.984
+  ],
+  "auc_same_format": 0.968,
+  "minus_4B": 0.0,
+  "minus_4B_ci": [
+   0.0,
+   0.0
+  ],
+  "worst_claim_rank": 49,
+  "flag_share_for_21_of_21": 0.348,
+  "sec_per_pair_P1": 0.53,
+  "sec_per_pair_as_scored": 0.53,
+  "auc_P1S": 0.487,
+  "auc_P6": 0.602,
+  "auc_P4": 0.942,
+  "E2_auc_P1": 0.516,
+  "E2_ci": [
+   0.359,
+   0.672
+  ],
+  "E3_auc_P1": 0.637,
+  "E3_ci": [
+   0.531,
+   0.736
+  ]
+ },
+ "Qwen3.5-4B 原生（主推）": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.962,
+  "ci": [
+   0.928,
+   0.988
+  ],
+  "auc_same_format": 0.966,
+  "minus_4B": 0.009,
+  "minus_4B_ci": [
+   -0.001,
+   0.025
+  ],
+  "worst_claim_rank": 46,
+  "flag_share_for_21_of_21": 0.326,
+  "sec_per_pair_P1": 0.53,
+  "sec_per_pair_as_scored": 1.59,
+  "auc_P1S": 0.487,
+  "auc_P6": 0.602,
+  "auc_P4": 0.942,
+  "E2_auc_P1": 0.516,
+  "E2_ci": [
+   0.359,
+   0.672
+  ],
+  "E3_auc_P1": 0.637,
+  "E3_ci": [
+   0.531,
+   0.736
+  ]
+ },
+ "Qwen3.5-4B 1024": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.915,
+  "ci": [
+   0.829,
+   0.986
+  ],
+  "auc_same_format": 0.905,
+  "minus_4B": -0.038,
+  "minus_4B_ci": [
+   -0.1,
+   0.008
+  ],
+  "worst_claim_rank": 99,
+  "flag_share_for_21_of_21": 0.702,
+  "sec_per_pair_P1": 0.38,
+  "sec_per_pair_as_scored": 1.13,
+  "auc_P1S": 0.457,
+  "auc_P6": 0.667,
+  "auc_P4": 0.922,
+  "E2_auc_P1": 0.57,
+  "E2_ci": [
+   0.425,
+   0.701
+  ],
+  "E3_auc_P1": 0.653,
+  "E3_ci": [
+   0.544,
+   0.757
+  ]
+ },
+ "Qwen3.5-4B 768": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.935,
+  "ci": [
+   0.856,
+   0.986
+  ],
+  "auc_same_format": 0.931,
+  "minus_4B": -0.019,
+  "minus_4B_ci": [
+   -0.075,
+   0.013
+  ],
+  "worst_claim_rank": 105,
+  "flag_share_for_21_of_21": 0.745,
+  "sec_per_pair_P1": 0.29,
+  "sec_per_pair_as_scored": 0.84
+ },
+ "Qwen3.5-4B 512": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.875,
+  "ci": [
+   0.749,
+   0.977
+  ],
+  "auc_same_format": 0.859,
+  "minus_4B": -0.079,
+  "minus_4B_ci": [
+   -0.179,
+   -0.0
+  ],
+  "worst_claim_rank": 117,
+  "flag_share_for_21_of_21": 0.83,
+  "sec_per_pair_P1": 0.2,
+  "sec_per_pair_as_scored": 0.58
+ },
+ "Qwen3.5-2B 原生": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.899,
+  "ci": [
+   0.807,
+   0.969
+  ],
+  "auc_same_format": 0.893,
+  "minus_4B": -0.054,
+  "minus_4B_ci": [
+   -0.118,
+   -0.008
+  ],
+  "worst_claim_rank": 101,
+  "flag_share_for_21_of_21": 0.716,
+  "sec_per_pair_P1": 0.36,
+  "sec_per_pair_as_scored": 1.07,
+  "auc_P1S": 0.49,
+  "auc_P6": 0.619,
+  "E2_auc_P1": 0.431,
+  "E2_ci": [
+   0.283,
+   0.594
+  ],
+  "E3_auc_P1": 0.669,
+  "E3_ci": [
+   0.552,
+   0.777
+  ]
+ },
+ "Qwen3.5-2B 1024": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.891,
+  "ci": [
+   0.798,
+   0.965
+  ],
+  "auc_same_format": 0.873,
+  "minus_4B": -0.062,
+  "minus_4B_ci": [
+   -0.128,
+   -0.013
+  ],
+  "worst_claim_rank": 92,
+  "flag_share_for_21_of_21": 0.652,
+  "sec_per_pair_P1": 0.26,
+  "sec_per_pair_as_scored": 0.78,
+  "auc_P1S": 0.531,
+  "auc_P6": 0.709,
+  "auc_P4": 0.922
+ },
+ "Qwen3.5-0.8B 1024": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.851,
+  "ci": [
+   0.739,
+   0.941
+  ],
+  "auc_same_format": 0.855,
+  "minus_4B": -0.102,
+  "minus_4B_ci": [
+   -0.195,
+   -0.026
+  ],
+  "worst_claim_rank": 116,
+  "flag_share_for_21_of_21": 0.823,
+  "sec_per_pair_P1": 0.2,
+  "sec_per_pair_as_scored": 0.62,
+  "auc_P1S": 0.658,
+  "auc_P6": 0.779,
+  "auc_P4": 0.872
+ },
+ "Qwen3.5-0.8B 原生（未訓練）": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.868,
+  "ci": [
+   0.767,
+   0.947
+  ],
+  "auc_same_format": 0.855,
+  "minus_4B": -0.086,
+  "minus_4B_ci": [
+   -0.166,
+   -0.019
+  ],
+  "worst_claim_rank": 95,
+  "flag_share_for_21_of_21": 0.674,
+  "sec_per_pair_P1": 0.25,
+  "sec_per_pair_as_scored": 0.73,
+  "auc_P1S": 0.74,
+  "auc_P6": 0.845
+ },
+ "Qwen3.5-0.8B 原生 P1（未訓練）": {
+  "note": "",
+  "prompts": "P1",
+  "auc": 0.899,
+  "ci": [
+   0.815,
+   0.964
+  ],
+  "auc_same_format": 0.869,
+  "minus_4B": -0.054,
+  "minus_4B_ci": [
+   -0.124,
+   -0.002
+  ],
+  "worst_claim_rank": 67,
+  "flag_share_for_21_of_21": 0.475,
+  "sec_per_pair_P1": 0.25,
+  "sec_per_pair_as_scored": 0.25,
+  "auc_P1S": 0.74,
+  "auc_P6": 0.845
+ },
+ "Qwen3.5-9B 8-bit 原生": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.92,
+  "ci": [
+   0.829,
+   0.985
+  ],
+  "auc_same_format": 0.919,
+  "minus_4B": -0.034,
+  "minus_4B_ci": [
+   -0.099,
+   0.012
+  ],
+  "worst_claim_rank": 114,
+  "flag_share_for_21_of_21": 0.809,
+  "sec_per_pair_P1": 0.9,
+  "sec_per_pair_as_scored": 2.61
+ },
+ "Qwen3.5-9B 8-bit 1024": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.904,
+  "ci": [
+   0.803,
+   0.982
+  ],
+  "auc_same_format": 0.897,
+  "minus_4B": -0.05,
+  "minus_4B_ci": [
+   -0.117,
+   0.005
+  ],
+  "worst_claim_rank": 102,
+  "flag_share_for_21_of_21": 0.723,
+  "sec_per_pair_P1": 0.59,
+  "sec_per_pair_as_scored": 1.76,
+  "auc_P1S": 0.717,
+  "auc_P6": 0.24,
+  "auc_P4": 0.901
+ },
+ "Gemma 4 12B 4-bit 原生": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.945,
+  "ci": [
+   0.885,
+   0.987
+  ],
+  "auc_same_format": 0.927,
+  "minus_4B": -0.009,
+  "minus_4B_ci": [
+   -0.055,
+   0.028
+  ],
+  "worst_claim_rank": 79,
+  "flag_share_for_21_of_21": 0.56,
+  "sec_per_pair_P1": 1.08,
+  "sec_per_pair_as_scored": 3.26,
+  "auc_P1S": 0.789,
+  "auc_P6": 0.671,
+  "auc_P4": 0.818,
+  "E2_auc_P1": 0.508,
+  "E2_ci": [
+   0.357,
+   0.658
+  ],
+  "E3_auc_P1": 0.63,
+  "E3_ci": [
+   0.524,
+   0.728
+  ]
+ },
+ "Qwen3-VL-8B 8-bit 原生": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.906,
+  "ci": [
+   0.818,
+   0.976
+  ],
+  "auc_same_format": 0.913,
+  "minus_4B": -0.048,
+  "minus_4B_ci": [
+   -0.114,
+   0.004
+  ],
+  "worst_claim_rank": 103,
+  "flag_share_for_21_of_21": 0.73,
+  "sec_per_pair_P1": 0.71,
+  "sec_per_pair_as_scored": 2.11,
+  "auc_P1S": 0.594,
+  "auc_P6": 0.385,
+  "auc_P4": 0.904
+ },
+ "GLM-4.6V-Flash 8-bit 原生": {
+  "note": "",
+  "prompts": "P1+P2+P3",
+  "auc": 0.857,
+  "ci": [
+   0.727,
+   0.954
+  ],
+  "auc_same_format": 0.853,
+  "minus_4B": -0.097,
+  "minus_4B_ci": [
+   -0.204,
+   -0.017
+  ],
+  "worst_claim_rank": 140,
+  "flag_share_for_21_of_21": 0.993,
+  "sec_per_pair_P1": 1.02,
+  "sec_per_pair_as_scored": 3.07,
+  "auc_P1S": 0.81,
+  "auc_P6": 0.643,
+  "auc_P4": 0.858
+ },
+ "imajev-4b 40 萬像素": {
+  "note": "Jev-like",
+  "prompts": "P1+P2+P3",
+  "auc": 0.961,
+  "ci": [
+   0.914,
+   0.993
+  ],
+  "auc_same_format": 0.954,
+  "minus_4B": 0.007,
+  "minus_4B_ci": [
+   -0.036,
+   0.053
+  ],
+  "worst_claim_rank": 63,
+  "flag_share_for_21_of_21": 0.447,
+  "sec_per_pair_P1": 1.04,
+  "sec_per_pair_as_scored": 3.11,
+  "E2_auc_P1": 0.549,
+  "E2_ci": [
+   0.415,
+   0.69
+  ]
+ },
+ "imajev-4b 原生": {
+  "note": "Jev-like",
+  "prompts": "P1+P2+P3",
+  "auc": 0.953,
+  "ci": [
+   0.898,
+   0.991
+  ],
+  "auc_same_format": 0.946,
+  "minus_4B": -0.0,
+  "minus_4B_ci": [
+   -0.052,
+   0.051
+  ],
+  "worst_claim_rank": 77,
+  "flag_share_for_21_of_21": 0.546,
+  "sec_per_pair_P1": 1.81,
+  "sec_per_pair_as_scored": 5.44,
+  "auc_P1S": 0.723,
+  "auc_P6": 0.672
+ },
+ "Intern-Decision-4B 原生": {
+  "note": "Jev-like",
+  "prompts": "P1+P2+P3",
+  "auc": 0.952,
+  "ci": [
+   0.898,
+   0.988
+  ],
+  "auc_same_format": 0.938,
+  "minus_4B": -0.002,
+  "minus_4B_ci": [
+   -0.031,
+   0.025
+  ],
+  "worst_claim_rank": 60,
+  "flag_share_for_21_of_21": 0.426,
+  "sec_per_pair_P1": 0.55,
+  "sec_per_pair_as_scored": 1.62,
+  "auc_P1S": 0.846,
+  "auc_P6": 0.892
+ },
+ "vev-4b 原生（不可商用）": {
+  "note": "Jev-like, CC BY-NC",
+  "prompts": "P1+P2+P3",
+  "auc": 0.966,
+  "ci": [
+   0.928,
+   0.993
+  ],
+  "auc_same_format": 0.972,
+  "minus_4B": 0.013,
+  "minus_4B_ci": [
+   -0.017,
+   0.045
+  ],
+  "worst_claim_rank": 51,
+  "flag_share_for_21_of_21": 0.362,
+  "sec_per_pair_P1": 0.51,
+  "sec_per_pair_as_scored": 1.5,
+  "auc_P1S": 0.742,
+  "auc_P6": 0.733
+ },
+ "學生 0.8B（蒸餾自 4B）": {
+  "note": "Jev-like student",
+  "prompts": "P1",
+  "auc": 0.941,
+  "ci": [
+   0.89,
+   0.982
+  ],
+  "auc_same_format": 0.944,
+  "minus_4B": -0.012,
+  "minus_4B_ci": [
+   -0.044,
+   0.013
+  ],
+  "worst_claim_rank": 58,
+  "flag_share_for_21_of_21": 0.411,
+  "sec_per_pair_P1": 0.32,
+  "sec_per_pair_as_scored": 0.32,
+  "auc_P1S": 0.348,
+  "auc_P6": 0.805,
+  "E2_auc_P1": 0.55,
+  "E2_ci": [
+   0.399,
+   0.685
+  ],
+  "E3_auc_P1": 0.613,
+  "E3_ci": [
+   0.502,
+   0.716
+  ]
+ },
+ "學生 2B（蒸餾自 4B，半個 epoch）": {
+  "note": "Jev-like student",
+  "prompts": "P1",
+  "auc": 0.934,
+  "ci": [
+   0.84,
+   0.992
+  ],
+  "auc_same_format": 0.938,
+  "minus_4B": -0.02,
+  "minus_4B_ci": [
+   -0.092,
+   0.025
+  ],
+  "worst_claim_rank": 121,
+  "flag_share_for_21_of_21": 0.858,
+  "sec_per_pair_P1": 0.38,
+  "sec_per_pair_as_scored": 0.38,
+  "auc_P1S": 0.402,
+  "auc_P6": 0.762
+ },
+ "4B+Gemma+imajev（事後挑選）": {
+  "note": "ensemble (z-scored sum)",
+  "auc": 0.979,
+  "ci": [
+   0.957,
+   0.994
+  ],
+  "auc_same_format": 0.982,
+  "minus_4B": 0.025,
+  "minus_4B_ci": [
+   0.005,
+   0.055
+  ],
+  "worst_claim_rank": 33,
+  "flag_share_for_21_of_21": 0.234,
+  "E2_auc_P1": 0.517,
+  "E2_ci": [
+   0.361,
+   0.675
+  ]
+ },
+ "4B+imajev": {
+  "note": "ensemble (z-scored sum)",
+  "auc": 0.972,
+  "ci": [
+   0.945,
+   0.991
+  ],
+  "auc_same_format": 0.974,
+  "minus_4B": 0.019,
+  "minus_4B_ci": [
+   -0.004,
+   0.049
+  ],
+  "worst_claim_rank": 38,
+  "flag_share_for_21_of_21": 0.27,
+  "E2_auc_P1": 0.537,
+  "E2_ci": [
+   0.389,
+   0.686
+  ]
+ },
+ "4B+Gemma": {
+  "note": "ensemble (z-scored sum)",
+  "auc": 0.968,
+  "ci": [
+   0.935,
+   0.991
+  ],
+  "auc_same_format": 0.966,
+  "minus_4B": 0.014,
+  "minus_4B_ci": [
+   -0.002,
+   0.038
+  ],
+  "worst_claim_rank": 47,
+  "flag_share_for_21_of_21": 0.333,
+  "E2_auc_P1": 0.496,
+  "E2_ci": [
+   0.327,
+   0.646
+  ],
+  "E3_auc_P1": 0.655,
+  "E3_ci": [
+   0.552,
+   0.756
+  ]
+ },
+ "cascade (4B first, ensemble on the uncertain share)": {
+  "top 30% by 4B -> ensemble": {
+   "claims_escalated": "20/21",
+   "auc": 0.973,
+   "flag_share_for_21_of_21": "misses a claim",
+   "mean_sec_per_pair": 3.5
+  },
+  "top 40% by 4B -> ensemble": {
+   "claims_escalated": "21/21",
+   "auc": 0.979,
+   "flag_share_for_21_of_21": 0.234,
+   "mean_sec_per_pair": 4.14
+  },
+  "top 50% by 4B -> ensemble": {
+   "claims_escalated": "21/21",
+   "auc": 0.979,
+   "flag_share_for_21_of_21": 0.234,
+   "mean_sec_per_pair": 4.77
+  },
+  "top 60% by 4B -> ensemble": {
+   "claims_escalated": "21/21",
+   "auc": 0.979,
+   "flag_share_for_21_of_21": 0.234,
+   "mean_sec_per_pair": 5.41
+  }
+ },
+ "real-traffic human share (4B native P1, corner pairs)": {
+  "catch 21/21": {
+   "share_of_real_pool_pairs_to_human": 0.17,
+   "share_of_complete_rentals_to_human (all 4 corners, any over T)": 0.481,
+   "same, 500-set rentals only (true pickup vs return)": 0.497,
+   "share_of_120_normal_pairs": 0.233,
+   "pool_pairs": 3850,
+   "complete_rentals": 414,
+   "complete_500set_rentals": 338
+  },
+  "catch 20/21": {
+   "share_of_real_pool_pairs_to_human": 0.143,
+   "share_of_complete_rentals_to_human (all 4 corners, any over T)": 0.415,
+   "same, 500-set rentals only (true pickup vs return)": 0.435,
+   "share_of_120_normal_pairs": 0.192,
+   "pool_pairs": 3850,
+   "complete_rentals": 414,
+   "complete_500set_rentals": 338
+  },
+  "catch 19/21": {
+   "share_of_real_pool_pairs_to_human": 0.128,
+   "share_of_complete_rentals_to_human (all 4 corners, any over T)": 0.396,
+   "same, 500-set rentals only (true pickup vs return)": 0.417,
+   "share_of_120_normal_pairs": 0.183,
+   "pool_pairs": 3850,
+   "complete_rentals": 414,
+   "complete_500set_rentals": 338
+  }
+ },
+ "paired differences (E1, bootstrap over cars)": {
+  "4B 原生 P1 - CLIP 1-cos": {
+   "diff": 0.117,
+   "ci": [
+    0.023,
+    0.227
+   ]
+  },
+  "4B 原生 P1 - ConvNeXt 凍結+LR（訓練分類器）": {
+   "diff": 0.113,
+   "ci": [
+    0.017,
+    0.218
+   ]
+  },
+  "4B P1 @1024 - ConvNeXt 凍結+LR": {
+   "diff": 0.076,
+   "ci": [
+    -0.048,
+    0.186
+   ]
+  },
+  "4B P1 @768 - ConvNeXt 凍結+LR": {
+   "diff": 0.098,
+   "ci": [
+    -0.008,
+    0.211
+   ]
+  },
+  "4B P1 @512 - ConvNeXt 凍結+LR": {
+   "diff": 0.058,
+   "ci": [
+    -0.083,
+    0.18
+   ]
+  },
+  "學生 0.8B（蒸餾自 4B） - 4B 原生 P1": {
+   "diff": -0.012,
+   "ci": [
+    -0.044,
+    0.013
+   ]
+  },
+  "學生 0.8B - Qwen3.5-0.8B 原生 P1（未訓練）": {
+   "diff": 0.042,
+   "ci": [
+    -0.009,
+    0.111
+   ]
+  },
+  "4B 原生：P1（取車+還車）- P4（只看還車）": {
+   "diff": 0.012,
+   "ci": [
+    -0.025,
+    0.058
+   ]
+  },
+  "4B P1-P3：原生 - 1024": {
+   "diff": 0.047,
+   "ci": [
+    -0.004,
+    0.118
+   ]
+  }
+ }
+}

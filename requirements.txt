@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pillow
+pillow-heif
+numpy
+opencv-python-headless
+scikit-image
+pyyaml
+python-multipart
+qrcode[pil]
+httpx

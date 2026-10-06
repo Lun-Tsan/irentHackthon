@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iRent 車況管家 demo</title>
+<style>
+body{margin:0;background:#16302b;color:#e6eee9;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;padding:40px 24px}
+h1{font-size:34px;margin:0 0 6px}
+p{color:#bfd3cb;max-width:70ch}
+.grid{display:flex;gap:24px;flex-wrap:wrap;margin-top:28px}
+.card{background:#1f3d37;border-radius:16px;padding:22px;width:340px}
+.card h2{font-size:18px;margin:0 0 10px;color:#e8935a}
+.card img{width:220px;height:220px;border-radius:12px;background:#fff;display:block;margin:10px 0}
+.card a{color:#e6eee9;word-break:break-all}
+.muted{font-size:13px;color:#8fa9a0}
+</style>
+</head>
+<body>
+<h1>iRent 智能車況管家 · demo</h1>
+<p>手機和這台筆電連同一個 Wi-Fi 或熱點，用手機內建相機或 Chrome 掃 QR code 打開用戶端（不要用 LINE 掃）；後台工作台在筆電上開。</p>
+<div class="grid" id="grid"></div>
+<p class="muted" id="health"></p>
+<script>
+fetch('/api/config').then(r=>r.json()).then(c=>{
+  const u=c.urls;const q=x=>'/api/qr?url='+encodeURIComponent(x);
+  document.getElementById('grid').innerHTML=`
+    <div class="card"><h2>手機 · 即時相機＋取景框</h2><img src="${q(u.app_https)}"><a href="${u.app_https}">${u.app_https}</a><div class="muted">自簽憑證：第一次會出現「連線不安全」，按「進階／顯示詳細資料」→「繼續前往」，再允許相機。</div></div>
+    <div class="card"><h2>手機 · 備用（HTTP，原生相機上傳）</h2><img src="${q(u.app_http)}"><a href="${u.app_http}">${u.app_http}</a><div class="muted">沒有即時取景框，但不需要處理憑證。</div></div>
+    <div class="card"><h2>後台工作台</h2><a href="/admin">${u.admin}</a><div class="muted" style="margin-top:10px">轉人工的區塊、工單、車輛狀態、事件紀錄都在這裡。</div></div>
+    <div class="card"><h2>現場即時畫面（投影用）</h2><a href="/live">${u.admin.replace('/admin','/live')}</a><div class="muted" style="margin-top:10px">手機每拍一張，照片和判讀結果 1–2 秒內出現在這裡，含被退回的和原因。</div></div>`;
+  document.getElementById('health').textContent=`車牌 OCR：${c.plate_ocr?'已啟用':'未安裝（劇本模式不需要）'} · 整潔頭 YOLO：${c.interior_head?'已啟用':'未安裝（劇本模式不需要）'}`;
+});
+</script>
+</body>
+</html>

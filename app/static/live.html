@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iRent 車況管家 · 現場即時畫面</title>
+<style>
+:root{--bg:#0f1513;--panel:#18211e;--line:#2a3733;--ink:#e8efec;--muted:#93a39d;--acc:#e8935a;--ok:#4cc38a;--warn:#f5c451;--bad:#f0655c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;padding:20px 28px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:16px}
+header h1{font-size:26px;margin:0}
+header .meta{font-size:16px;color:var(--muted)}
+header .meta b{color:var(--ink)}
+.state{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;font-size:14px;margin-left:8px;background:#1f3d37;color:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.slot .ph{position:relative;aspect-ratio:9/16;background:#000;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+.slot .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.slot .ph.rej img{filter:grayscale(.6) brightness(.7)}
+.badge{position:absolute;left:8px;top:8px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:700;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25)}
+.badge.ok{color:var(--ok);border-color:var(--ok)}.badge.bad{color:var(--bad);border-color:var(--bad)}.badge.unv{color:var(--warn);border-color:var(--warn)}
+.slot .cap{padding:10px 12px;font-size:14px}
+.slot .cap b{display:block;font-size:15px;margin-bottom:4px}
+.slot .cap .muted{color:var(--muted);font-size:13px}
+.slot .cap .bad{color:var(--bad)}
+.summary{background:var(--panel);border:1px solid var(--acc);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:none}
+.summary h2{margin:0 0 8px;font-size:18px;color:var(--acc)}
+.summary .row{display:flex;flex-wrap:wrap;gap:12px}
+.card{background:#1f2b27;border-radius:10px;padding:10px 12px;font-size:14px;min-width:220px}
+.card img{height:110px;border-radius:6px;margin-right:6px;border:1px solid var(--line)}
+.b{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
+.b-pass{background:#153d2a;color:var(--ok)}.b-review{background:#3f3416;color:var(--warn)}.b-human{background:#3f1e1a;color:var(--bad)}
+.b-clean{background:#153d2a;color:var(--ok)}.b-normal{background:#3f3416;color:var(--warn)}.b-dirty{background:#3f1e1a;color:var(--bad)}
+.feed{margin-top:18px}
+.feed h2{font-size:15px;color:var(--muted);letter-spacing:.06em;margin:0 0 8px}
+.feed .items{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+.feed .it{flex:none;width:96px;font-size:12px;color:var(--muted);text-align:center}
+.feed .it img{width:96px;height:170px;object-fit:cover;border-radius:8px;border:2px solid var(--line);display:block}
+.feed .it.bad img{border-color:var(--bad)}.feed .it.ok img{border-color:var(--ok)}
+.empty{color:var(--muted);padding:40px;text-align:center;font-size:18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>iRent 智能車況管家 · 現場即時畫面</h1>
+  <div class="meta" id="meta">等待手機開始拍照…</div>
+</header>
+<div class="summary" id="summary"></div>
+<div class="grid" id="grid"></div>
+<div class="feed"><h2>最新上傳（含被退回的）</h2><div class="items" id="feed"></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const BAND={pass:'自動放行',review:'送複判',human:'轉人工'};const LV={clean:'乾淨',normal:'普通',dirty:'髒汙（須立即清潔）',unknown:'未判定'};
+const PH={pickup:'取車',return:'還車'};const SC={clean:'正常',damage:'有新傷',dirty:'髒車',auto:'自動判讀'};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let lastKey='';
+function checksText(c){const b=[];if(c.plate&&!c.plate.skipped)b.push(c.plate.found?`車牌 ${esc(c.plate.text)} ${c.plate.match?'✓':'✗'} · ${c.plate.distance_m} m`:'車牌：沒拍到');if(c.odometer&&!c.odometer.skipped)b.push(c.odometer.reading!=null?`里程 ${c.odometer.reading} km`:'里程：沒讀到');if(c.quality)b.push(`清晰度 ${c.quality.blur} · 亮度 ${c.quality.brightness}`);return b.join('　');}
+async function tick(){
+  let d;try{d=await (await fetch('/api/live')).json();}catch(e){return;}
+  if(!d.session){$('#grid').innerHTML='<div class="empty">還沒有任何拍攝。手機按「開始拍照」後這裡會即時更新。</div>';return;}
+  const s=d.session;
+  $('#meta').innerHTML=`<b>${esc(d.vehicle?d.vehicle.plate:'')}</b> ${esc(d.vehicle?d.vehicle.model:'')} · ${esc(d.rental?d.rental.user:'')} · <b>${PH[s.phase]||s.phase}</b> · 劇本：${SC[s.scenario]||s.scenario}<span class="state">${esc(d.vehicle_state_label||'')}</span>`;
+  const key=JSON.stringify([s.id,d.attempts.map(a=>a.id),s.completed_at]);if(key===lastKey)return;lastKey=key;
+  const slots=s.phase==='pickup'?d.slots:d.slots;
+  $('#grid').innerHTML=slots.map(sl=>{const c=d.latest[sl.id];if(!c)return `<div class="slot"><div class="ph">${esc(sl.label)}<br>待拍</div><div class="cap"><b>${esc(sl.label)}</b><span class="muted">還沒拍</span></div></div>`;
+    const cls=c.accepted?(c.unverified?'unv':'ok'):'bad';const txt=c.accepted?(c.unverified?'未驗證（加註記送出）':'✓ 合格'):'✗ 退回';
+    return `<div class="slot"><div class="ph ${c.accepted?'':'rej'}">${c.url?`<img src="${c.url}">`:''}<span class="badge ${cls}">${txt}</span></div><div class="cap"><b>${esc(sl.label)} <span class="muted">第 ${d.attempts.filter(a=>a.slot===sl.id).length} 次</span></b>${c.issues.length?`<div class="bad">${c.issues.map(i=>esc(i.msg)).join('；')}</div>`:''}<div class="muted">${checksText(c.checks||{})}</div><div class="muted">${esc(c.created_at)}</div></div></div>`;}).join('');
+  $('#feed').innerHTML=d.attempts.map(a=>`<div class="it ${a.accepted?'ok':'bad'}">${a.url?`<img src="${a.url}">`:''}<div>${esc((slots.find(x=>x.id===a.slot)||{}).label||a.slot)}<br>${a.accepted?'合格':'退回'}</div></div>`).join('');
+  const sm=s.summary;const box=$('#summary');
+  if(sm){const lab=id=>(slots.find(x=>x.id===id)||{}).label||id;let h=`<h2>AI 判讀結果 · 車輛狀態：${esc(d.vehicle_state_label||'')}${sm.scenario!=='auto'?'（劇本模式）':''}</h2><div class="row">`;
+    for(const e of sm.exterior)h+=`<div class="card"><span class="b b-${e.band}">${BAND[e.band]}</span>${lab(e.slot)} · 最大差異 ${e.max}<div style="margin-top:6px"><img src="${e.baseline}"><img src="${e.current}"><img src="${e.heatmap}"></div></div>`;
+    for(const i of sm.interior)h+=`<div class="card"><span class="b b-${i.level}">${LV[i.level]||esc(i.level)}</span>${lab(i.slot)}${i.objects&&i.objects.length?' · 偵測到 '+i.objects.map(esc).join('、'):''}</div>`;
+    if(sm.workorders&&sm.workorders.length)h+=`<div class="card">已自動開出 ${sm.workorders.length} 張工單，整備人員已收到推播</div>`;
+    h+='</div>';box.innerHTML=h;box.style.display='block';}
+  else box.style.display='none';
+}
+tick();setInterval(tick,1500);
+</script>
+</body>
+</html>

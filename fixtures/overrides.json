@@ -1,0 +1,8 @@
+{
+  "_comment": "把某張照片的判讀結果寫死：key 是上傳檔案的 sha256（PowerShell: Get-FileHash 照片.jpg）。錄影時保證結果一樣。例：",
+  "_example_sha256": {
+    "interior": {"level": "dirty", "objects": ["bottle", "bottle", "handbag"], "count": 3},
+    "plate": {"skipped": false, "found": true, "match": true, "text": "ABC1234", "conf": 0.99, "distance_m": 2.1},
+    "odometer": {"skipped": false, "reading": 48213}
+  }
+}

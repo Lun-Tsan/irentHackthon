@@ -1,0 +1,3 @@
+# 預訓練模型（固定權重）。裝不起來也能跑 demo：車牌 OCR 和整潔頭會停用，可用 fixtures/overrides.json 補。
+easyocr
+ultralytics

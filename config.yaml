@@ -1,0 +1,51 @@
+# iRent 車況管家 demo — 所有閾值都在這裡，錄影前用自己的照片校一次
+server:
+  http_port: 8000
+  https_port: 8443
+
+thresholds:
+  blur_min: 60.0          # 640px 灰階 Laplacian 變異數，低於這個算太糊（車外）
+  blur_min_interior: 25.0 # 車內照片本來就暗、椅面平坦，官方照片有 27% 過不了 60，車內門檻放寬
+  brightness_min: 0.18    # 灰階平均值 / 255，低於這個算太暗
+  brightness_max: 0.90    # 高於這個算太亮／反光
+  t1: 0.22                # 區塊差異分數 < T1 → 自動放行
+  t2: 0.45                # ≥ T2 → 直接進人工；T1–T2 之間 → 送複判（v1 由人工低優先處理）
+  dirty_objects_min: 2    # 車內偵測到 ≥ 這麼多「垃圾類」物件 → 髒汙(須立即清潔)
+  normal_objects_min: 1   # ≥ 這麼多 → 普通；否則乾淨
+  max_attempts_before_force: 2   # 同一視角連續失敗幾次後允許「加註記送出」
+
+capture:
+  orientation: portrait   # portrait | landscape | any。iRent 現行 App 是直拍（官方資料包裡的照片都是 9:16），demo 跟著直拍
+  live_guidance: true     # 手機瀏覽器內跑 COCO-SSD lite（/static/vendor），對車外視角即時提示往左／往右／太遠
+
+plate:
+  enabled: auto           # auto = 有裝 EasyOCR 就用；on / off
+  real_width_m: 0.38      # 台灣車牌實體寬
+  focal_px_at_640: 520    # 手機廣角鏡頭在 640px 寬影像上的近似焦距（推距離用）
+  min_distance_m: 1.0     # 近於這個算太近
+  max_distance_m: 4.5     # 遠於這個算太遠
+  odometer_tolerance: 50  # 里程 OCR 和車聯網里程的容許誤差（km）
+
+compare:
+  grid_rows: 3
+  grid_cols: 4
+  min_matches: 25         # ORB 對齊至少要這麼多 inlier，否則用未對齊的差異（低信心）
+  percentile: 90          # 每個區塊取差異圖的第幾百分位當分數
+
+workorders:
+  cleaning_sla_hours: 4
+  repair_sla_hours: 48
+
+points:
+  all_photos_pass: 50
+  pickup_report_confirmed: 200
+
+# 和 iRent 現行 App 一樣的六格（上傳清單 ImageType 1/2/3/4/10/11），外加我們提案新增的儀表板里程錨點
+slots:
+  - {id: ext_fl,    label: 左前,       kind: exterior, view: corner, plate: true,  image_type: 1}
+  - {id: ext_fr,    label: 右前,       kind: exterior, view: corner, plate: true,  image_type: 2}
+  - {id: ext_rl,    label: 左後,       kind: exterior, view: corner, plate: true,  image_type: 3}
+  - {id: ext_rr,    label: 右後,       kind: exterior, view: corner, plate: true,  image_type: 4}
+  - {id: int_front, label: 前車內,     kind: interior, view: cabin,  image_type: 10}
+  - {id: int_rear,  label: 後車內,     kind: interior, view: cabin,  image_type: 11}
+  - {id: int_dash,  label: 儀表板里程, kind: interior, view: dash,   odometer: true}

@@ -1,0 +1,14 @@
+{
+  "_comment": "demo 假資料。錄影時可在本機暫時改 plate 與 odometer，但真實車牌不要 commit 進 git。",
+  "vehicles": [
+    {"id": "V-001", "plate": "ABC-1234", "model": "Toyota Corolla Altis", "state": "available", "odometer": 48213, "location": "台北 信義區 A 停車場 B2-17"}
+  ],
+  "rentals": [
+    {"id": "R-A", "vehicle_id": "V-001", "user": "上一手 小明", "status": "returned", "prev_rental_id": null, "next_rental_id": "R-B"},
+    {"id": "R-B", "vehicle_id": "V-001", "user": "示範用戶 B", "status": "reserved", "prev_rental_id": "R-A", "next_rental_id": "R-C"},
+    {"id": "R-C", "vehicle_id": "V-001", "user": "下一位 小華", "status": "reserved", "prev_rental_id": "R-B", "next_rental_id": null}
+  ],
+  "telematics": {
+    "V-001": {"odometer": 48213, "unlock_time": "demo", "gps": [25.033, 121.5654]}
+  }
+}

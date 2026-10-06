@@ -1,0 +1,13 @@
+# Experiments (local VLM scoring, Jev-like models, student distillation).
+# Install torch + torchvision first from the CUDA index, e.g.
+#   uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+transformers>=5.18
+accelerate
+bitsandbytes
+peft
+safetensors
+huggingface_hub
+scikit-learn
+scipy
+numpy
+pillow

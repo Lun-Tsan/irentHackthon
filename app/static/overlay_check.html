@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>取景框對照檢查</title>
+<style>
+body{margin:0;background:#111;color:#eee;font-family:system-ui,sans-serif;padding:16px}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.cell{width:270px}
+.cell b{display:block;margin:0 0 6px;font-size:14px}
+.cam{position:relative;width:270px;aspect-ratio:9/16;background:#000;border-radius:10px;overflow:hidden}
+.cam img,.cam svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+<body>
+<p style="margin:0 0 12px;color:#aaa;font-size:13px">開發用：直式取景框疊在官方資料包的真實照片上，看構圖對不對。</p>
+<div class="row" id="row"></div>
+<script src="/static/overlay.js"></script>
+<script>
+const overlayPortrait=window.overlayPortrait;
+const cells=[
+  {id:'ext_fl',view:'corner',label:'左前 (set001 取車_01)',img:'fl'},
+  {id:'ext_fr',view:'corner',label:'右前 (set002 取車_02)',img:'fr'},
+  {id:'ext_rl',view:'corner',label:'左後 (set001 取車_03)',img:'rl'},
+  {id:'ext_rr',view:'corner',label:'右後 (set003 取車_04)',img:'rr'},
+  {id:'int_front',view:'cabin',label:'前車內 (set005 還車_10)',img:'int_front'},
+  {id:'int_rear',view:'cabin',label:'後車內 (set005 還車_11)',img:'int_rear'},
+];
+document.getElementById('row').innerHTML=cells.map(c=>`<div class="cell"><b>${c.label}</b><div class="cam"><img src="/files/samples/${c.img}.jpg">${overlayPortrait(c)}</div></div>`).join('');
+</script>
+</body>
+</html>
