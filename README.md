@@ -14,7 +14,7 @@
 
 | 題目環節 | 我們做的事 | 程式 |
 |---|---|---|
-| **環節一 即時防呆**：現場拍照的即時分析 | 手機取景框疊上半透明的範例圖層。手機瀏覽器每 0.45 秒跑一次 TF.js COCO-SSD 車輛偵測，提示「往左／往右／太遠」。拍下的瞬間檢查模糊、亮度、直橫。伺服器逐張回饋，並用車牌 OCR 確認是這台車、用儀表板里程 OCR 對照車聯網里程 | `app/static/app.html`、`app/static/overlay.js`、`app/vision/quality.py`、`app/vision/plate.py` |
+| **環節一 即時防呆**：現場拍照的即時分析 | 手機取景框疊上半透明的範例圖層。手機瀏覽器每 0.3 秒跑一次 TF.js COCO-SSD 車輛偵測（上一次還沒算完就跳過），提示「往左／往右／太遠」。拍下的瞬間檢查模糊、亮度、直橫。伺服器逐張回饋，並用車牌 OCR 確認是這台車、用儀表板里程 OCR 對照車聯網里程 | `app/static/app.html`、`app/static/overlay.js`、`app/vision/quality.py`、`app/vision/plate.py` |
 | **環節二 新車損判讀**：本機模型打分 | 用 **Jev 式讀法**讓本機開源視覺語言模型（VLM）判斷「還車照有沒有取車照沒有的新傷」：不生成文字，一次前向，直接讀 Yes/No 答案 token 的機率。比較了 10 多種本機模型與設定 | `experiments/vlm_option_probs.py`、`experiments/jev_like_probs.py` |
 | **環節二** **Jev-like 模型訓練** | 用大模型當老師，在無標註照片上蒸餾出一個只有 0.8B 參數的快速分類器（LoRA） | `experiments/jev_student.py` |
 | **環節三 營運閉環** | 車輛狀態機、車損紀錄狀態機、工單、驗收、通知、申訴、後台工作台 demo | `app/fsm.py`、`app/pipeline.py`、`app/static/admin.html` |

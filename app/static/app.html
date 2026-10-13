@@ -196,7 +196,7 @@ async function startCamera(){
   if(S.stream)return;
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){fallback();return;}
   try{S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
-    $('#video').srcObject=S.stream;await $('#video').play();setInterval(hints,450);if(S.guide)loadDetector();}
+    $('#video').srcObject=S.stream;await $('#video').play();setInterval(hints,300);if(S.guide)loadDetector();}
   catch(e){fallback('相機打不開（'+e.name+'），改用檔案上傳');}
 }
 // 即時位置引導：瀏覽器內跑 COCO-SSD lite（模型檔由筆電提供，手機不用連外網）
